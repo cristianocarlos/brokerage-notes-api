@@ -1,5 +1,5 @@
-from bn_models import Trade, BrokerageNote
-from bn_database import db_insert
+from models import Trade, BrokerageNote
+from database import db_insert
 from bn_base import format_br_date_to_db, resolve_auction_date, resolve_settlement_date
 
 def trades(content: str):
