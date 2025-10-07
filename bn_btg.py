@@ -50,7 +50,7 @@ def trades(content: str):
                 trade_type = 'swing-trade'
                 base_len = pos_v + 5
                 trade_ticker = pl[base_len : base_len + 7].strip()
-                if trade_ticker.endswith('F'): trade_ticker = trade_ticker[-1:] # elimina o F que indica fracionado
+                if trade_ticker.endswith('F'): trade_ticker = trade_ticker[0:-1] # elimina o F que indica fracionado
             trade_price = line_parts[line_parts_length - 3]\
                 .replace('.', '')\
                 .replace(',', '.')
@@ -104,17 +104,20 @@ def brokerage_notes(content: str):
     for db_column, label in items.items():
         pos_label = page_content.find(label)
         pos_bl = page_content[pos_label:].find('\n')
-        value = (page_content[pos_label:pos_label + pos_bl]
+        raw_line = page_content[pos_label:pos_label + pos_bl].strip()
+        multiply = -1 if raw_line[-1:] == 'D' else 1
+        value = (raw_line
                  .replace(label, '')
                  .replace(' D', '')
                  .replace(' C', '')
-                 .strip()
                  .replace('.', '')
                  .replace(',', '.')
                  )
         if label == label_irrf:
             value_parts = value.split(' ')
             if len(value_parts) > 1: value = value_parts[1]
+        if  db_column == 'brno_valu':
+            value = float(value) * multiply
         print(db_column, '=', value)
         values[db_column] = value
     model = BrokerageNote(

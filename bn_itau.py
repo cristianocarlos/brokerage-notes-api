@@ -64,6 +64,7 @@ def brokerage_notes(content: str):
         'brno_iss_v1': 'ISS(SÃO PAULO) ', # nota antiga
         'brno_clea_v1': 'Corretagem ', # nota antiga
         'brno_irrf_v1': label_irrf_v1, # nota antiga
+        'brno_irrf_v2': label_irrf_v2, # nota antiga
         'brno_valu': 'Valor líquido das operações ',
         'brno_taxl': 'Taxa de liquidação/CCP ',
         'brno_taxr': 'Taxa de Registro ',
@@ -77,17 +78,20 @@ def brokerage_notes(content: str):
     for db_column, label in items.items():
         pos_label = page_content.find(label)
         pos_bl = page_content[pos_label:].find('\n')
+        raw_line = page_content[pos_label:pos_label + pos_bl].strip()
+        multiply = -1 if raw_line[-1:] == 'D' else 1
         value = (page_content[pos_label:pos_label + pos_bl]
                  .replace(label, '')
                  .replace(' D', '')
                  .replace(' C', '')
-                 .strip()
                  .replace('.', '')
                  .replace(',', '.')
                  )
         if label == label_irrf or label == label_irrf_v1 or label == label_irrf_v2:
             value_parts = value.split(' ')
             if len(value_parts) > 1: value = value_parts[1]
+        if  db_column == 'brno_valu':
+            value = float(value) * multiply
         print(db_column, '=', value)
         values[db_column] = value
     model = BrokerageNote(

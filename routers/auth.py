@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
-SECRET_KEY = '197b2c37c391bed93fe80344fe73b806947a65e36206e05a1a23c2fa12702fe3'
+CLIENT_SECRET = '197b2c37c391bed93fe80344fe73b806947a65e36206e05a1a23c2fa12702fe3'
+SYSTEM_SECRET = '197b2c37c391bed93fe80344fe73b806947a65e36206e05a1a23c2fa12702fe3'
 ALGORITHM = 'HS256'
 
 router = APIRouter(
@@ -35,12 +36,12 @@ class TokenResponse(BaseModel):
 class TokenRequest(BaseModel):
     secret_key: str
 
-def is_valid_secret_key(secret_key: str):
-    return secret_key == SECRET_KEY
+def is_valid_client_secret(client_secret: str):
+    return client_secret == CLIENT_SECRET
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, CLIENT_SECRET, algorithms=[ALGORITHM])
         username: str = payload.get('sub')
         user_id: int = payload.get('id')
         if username is None or user_id is None:
@@ -49,15 +50,15 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f'Erro na tentativa de autorização {e}')
 
-def create_access_token(username: str, user_id: int, secret_key: str, expire_datetime: datetime):
+def create_access_token(username: str, user_id: int, expire_datetime: datetime):
     encode = {'sub': username, 'id': user_id}
     encode.update({'exp': int(expire_datetime.timestamp())})
-    return jwt.encode(encode, secret_key, algorithm=ALGORITHM)
+    return jwt.encode(encode, SYSTEM_SECRET, algorithm=ALGORITHM)
 
 @router.post('/token', response_model=TokenResponse)
 async def login_token(request: TokenRequest):
-    if not is_valid_secret_key(request.secret_key):
+    if not is_valid_client_secret(request.client_secret):
         raise HTTPException(status_code=401, detail='Secret key inválida')
     expire_datetime = datetime.now(timezone.utc) + timedelta(minutes=20)
-    token = create_access_token('admin', 1, request.secret_key, expire_datetime)
+    token = create_access_token('admin', 1, expire_datetime)
     return {'access_token': token, 'expire_datetime': expire_datetime}
