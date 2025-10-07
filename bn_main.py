@@ -6,17 +6,17 @@ import bn_dw
 
 def dw(pdf_path):
     content = pdf_content(pdf_path)
-    bn_dw.brokerage_notes(content)
+    # bn_dw.brokerage_notes(content)
     bn_dw.trades(content)
 
 def itau(pdf_path):
     content = pdf_content(pdf_path)
-    bn_itau.brokerage_notes(content)
+    # bn_itau.brokerage_notes(content)
     bn_itau.trades(content)
 
 def btg(pdf_path):
     content = pdf_content(pdf_path)
-    bn_btg.brokerage_notes(content)
+    # bn_btg.brokerage_notes(content)
     bn_btg.trades(content)
 
 '''
@@ -35,3 +35,15 @@ for root, dirs, files in os.walk('import'):
 '''
 
 # print('import/tmp.pdf')
+
+for root, dirs, files in os.walk('import'):
+    for file in files:
+        file_path = os.path.join(root, file)
+        if '.pdf' in file_path:
+            print(file_path)
+            if 'btg' in file_path:
+                btg(file_path)
+            elif 'dw' in file_path:
+                dw(file_path)
+            elif 'itau' in file_path:
+                itau(file_path)
