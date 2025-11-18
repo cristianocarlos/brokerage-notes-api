@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String, Numeric, Date
 
 class Trade(Base):
     __tablename__ = 'trade_auto'
+    __table_args__ = {'schema': 'main'}
     trad_code = Column(Integer, primary_key=True)
     trad_date = Column(String)
     trad_tick = Column(String)
@@ -16,6 +17,7 @@ class Trade(Base):
 
 class BrokerageNote(Base):
     __tablename__ = 'brokerage_note_auto'
+    __table_args__ = {'schema': 'main'}
     brno_date = Column(Date, primary_key=True)
     brno_valu = Column(Numeric)
     brno_taxl = Column(Numeric, server_default='0')

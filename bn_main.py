@@ -6,17 +6,17 @@ import bn_dw
 
 def dw(pdf_path):
     content = pdf_content(pdf_path)
-    # bn_dw.brokerage_notes(content)
+    bn_dw.brokerage_notes(content)
     bn_dw.trades(content)
 
 def itau(pdf_path):
     content = pdf_content(pdf_path)
-    # bn_itau.brokerage_notes(content)
+    bn_itau.brokerage_notes(content)
     bn_itau.trades(content)
 
 def btg(pdf_path):
     content = pdf_content(pdf_path)
-    # bn_btg.brokerage_notes(content)
+    bn_btg.brokerage_notes(content)
     bn_btg.trades(content)
 
 '''
