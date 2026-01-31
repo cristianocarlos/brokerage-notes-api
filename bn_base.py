@@ -1,6 +1,12 @@
 import re
 import pdfplumber
-from datetime import datetime
+from datetime import date, datetime
+
+def get_value_or_default(data_list, index, default_value=None):
+    try:
+        return data_list[index]
+    except IndexError:
+        return default_value
 
 def pdf_content(pdf_path: str):
     content = ""
@@ -38,6 +44,8 @@ def resolve_auction_date(content: str):
 
 def resolve_settlement_date(content: str):
     date_values = re.findall(r'\b\d{1,2}/\d{1,2}/\d{4}\b', content)
-    if date_values[0] == date_values[1]:
-        return date_values[2] # quando tem mais de uma página
-    return date_values[1]
+    br_today_date = date.today().strftime('%d/%m/%Y')
+    last_value = get_value_or_default(date_values, 1, br_today_date)
+    if date_values[0] == last_value:
+        return get_value_or_default(date_values, 2, br_today_date) # quando tem mais de uma página
+    return last_value
