@@ -20,7 +20,8 @@ def trades(content: str):
             # trade_type = 'day-trade' if line_parts[line_parts_length - 5] == 'D' else 'swing-trade'
             trade_quantity = line_parts[line_parts_length - 4]
             trade_date = format_br_date_to_db(resolve_auction_date(page_content))
-            trade_ticker = pl[pos_safe_ref + 5:pl.find(' CI ')].strip()
+            pos_end = pl.find(' DM ') if pl.find(' CI ') == -1 else pl.find(' CI ') # venda de subscrição não tem CI
+            trade_ticker = pl[pos_safe_ref + 5:pos_end].strip()
             raw_operation = pl[pos_safe_ref - 4:pos_safe_ref].strip() # tem muitas falhas no layout, então obtem um conjunto de strings contendo C ou V
             trade_operation = '.'
             match raw_operation:
